@@ -41,6 +41,18 @@
       "name": "Fiddle Leaf Fig",
       "image": "./images/fiddle-leaf-fig.jpg",
       "price": 55
+    },
+    {
+      "name": "timon",
+      "image": "https://images.pexels.com/photos/29279133/pexels-photo-29279133/free-photo-of-misty-forest-with-pine-trees-in-fog.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
+      "price": "10",
+      "id": 8
+    },
+    {
+      "name": "timon",
+      "image": "https://images.pexels.com/photos/29279133/pexels-photo-29279133/free-photo-of-misty-forest-with-pine-trees-in-fog.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
+      "price": "11",
+      "id": 9
     }
   ]
 }

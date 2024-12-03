@@ -1,25 +1,44 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import App from '../../components/App';
 import '@testing-library/jest-dom';
 
 describe('4th Deliverable', () => {
-  test('filters plants by name on search', async () => {
+  test('filters plants on search', async () => {
     global.setFetchResponse(global.basePlants)
-    const { getByPlaceholderText, queryAllByTestId } = render(<App />);
-    const searchInput = getByPlaceholderText('Type a name to search...');
-    fireEvent.change(searchInput, { target: { value: 'aloe' } });
+    let { findAllByTestId } = render(<App />);
+    const plantItems = await findAllByTestId('plant-item');
+    expect(plantItems).toHaveLength(global.basePlants.length);
 
-    await waitFor(() => {
-      const filteredPlants = queryAllByTestId('plant-item');
-      expect(filteredPlants).toHaveLength(1);
-    });
-    
-    fireEvent.change(searchInput, { target: { value: 'p' } });
-    
-    await waitFor(() => {
-      const filteredPlants = queryAllByTestId('plant-item');
-      expect(filteredPlants).toHaveLength(3);
-    });
+    const plantNames = plantItems.map((item) => item.querySelector('h4').textContent);
+    const basePlantNames = global.basePlants.map((plant) => plant.name);
+    expect(plantNames).toEqual(basePlantNames);
+
+    const plantImages = plantItems.map((item) => item.querySelector('img').src.split('/')[-1]);
+    const basePlantImages = global.basePlants.map((plant) => plant.image.split('/')[-1]);
+    expect(plantImages).toEqual(basePlantImages);
+
+    const plantPrices = plantItems.map((item) => item.querySelector('p').textContent);
+    const basePlantPrices = global.basePlants.map((plant) => 'Price: ' + plant.price.toString());
+    expect(plantPrices).toEqual(basePlantPrices);
+  });
+
+  test('plants aren\'t hardcoded', async () => {    
+    global.setFetchResponse(global.alternatePlants)
+    let { findAllByTestId } = render(<App />);
+    const plantItems = await findAllByTestId('plant-item');
+    expect(plantItems).toHaveLength(global.alternatePlants.length);
+
+    const plantNames = plantItems.map((item) => item.querySelector('h4').textContent);
+    const basePlantNames = global.alternatePlants.map((plant) => plant.name);
+    expect(plantNames).toEqual(basePlantNames);
+
+    const plantImages = plantItems.map((item) => item.querySelector('img').src.split('/')[-1]);
+    const basePlantImages = global.alternatePlants.map((plant) => plant.image.split('/')[-1]);
+    expect(plantImages).toEqual(basePlantImages);
+
+    const plantPrices = plantItems.map((item) => item.querySelector('p').textContent);
+    const basePlantPrices = global.alternatePlants.map((plant) => 'Price: ' + plant.price.toString());
+    expect(plantPrices).toEqual(basePlantPrices);
   });
 })

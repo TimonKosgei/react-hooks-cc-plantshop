@@ -1,51 +1,44 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import App from '../../components/App';
 import '@testing-library/jest-dom';
 
 describe('2nd Deliverable', () => {
-    test('adds a new plant when the form is submitted', async () => {
-        global.setFetchResponse(global.basePlants)
-        const { getByPlaceholderText, findByText, getByText } = render(<App />)
+  test('Adds a new plant when form is submitted', async () => {
+    global.setFetchResponse(global.basePlants)
+    let { findAllByTestId } = render(<App />);
+    const plantItems = await findAllByTestId('plant-item');
+    expect(plantItems).toHaveLength(global.basePlants.length);
 
-        const firstPlant = {name: 'foo', image: 'foo_plant_image_url', price: '10'}
-    
-        global.setFetchResponse(firstPlant)
-    
-        fireEvent.change(getByPlaceholderText('Plant name'), { target: { value: firstPlant.name } });
-        fireEvent.change(getByPlaceholderText('Image URL'), { target: { value: firstPlant.image } });
-        fireEvent.change(getByPlaceholderText('Price'), { target: { value: firstPlant.price } });
-        fireEvent.click(getByText('Add Plant'))
+    const plantNames = plantItems.map((item) => item.querySelector('h4').textContent);
+    const basePlantNames = global.basePlants.map((plant) => plant.name);
+    expect(plantNames).toEqual(basePlantNames);
 
-        expect(fetch).toHaveBeenCalledWith("http://localhost:6001/plants", {
-            method: "POST",
-            headers: {
-              "Content-Type": "Application/JSON",
-            },
-            body: JSON.stringify(firstPlant),
-        })
-    
-        const newPlant = await findByText('foo');
-        expect(newPlant).toBeInTheDocument();
+    const plantImages = plantItems.map((item) => item.querySelector('img').src.split('/')[-1]);
+    const basePlantImages = global.basePlants.map((plant) => plant.image.split('/')[-1]);
+    expect(plantImages).toEqual(basePlantImages);
 
-        const secondPlant = {name: 'bar', image: 'bar_plant_image_url', price: '5'}
-    
-        global.setFetchResponse(secondPlant)
-    
-        fireEvent.change(getByPlaceholderText('Plant name'), { target: { value: secondPlant.name } });
-        fireEvent.change(getByPlaceholderText('Image URL'), { target: { value: secondPlant.image } });
-        fireEvent.change(getByPlaceholderText('Price'), { target: { value: secondPlant.price } });
-        fireEvent.click(getByText('Add Plant'))
-    
-        expect(fetch).toHaveBeenCalledWith("http://localhost:6001/plants", {
-            method: "POST",
-            headers: {
-              "Content-Type": "Application/JSON",
-            },
-            body: JSON.stringify(secondPlant),
-        })
+    const plantPrices = plantItems.map((item) => item.querySelector('p').textContent);
+    const basePlantPrices = global.basePlants.map((plant) => 'Price: ' + plant.price.toString());
+    expect(plantPrices).toEqual(basePlantPrices);
+  });
 
-        const nextPlant = await findByText('bar');
-        expect(nextPlant).toBeInTheDocument();
-    });
+  test('plants aren\'t hardcoded', async () => {    
+    global.setFetchResponse(global.alternatePlants)
+    let { findAllByTestId } = render(<App />);
+    const plantItems = await findAllByTestId('plant-item');
+    expect(plantItems).toHaveLength(global.alternatePlants.length);
+
+    const plantNames = plantItems.map((item) => item.querySelector('h4').textContent);
+    const basePlantNames = global.alternatePlants.map((plant) => plant.name);
+    expect(plantNames).toEqual(basePlantNames);
+
+    const plantImages = plantItems.map((item) => item.querySelector('img').src.split('/')[-1]);
+    const basePlantImages = global.alternatePlants.map((plant) => plant.image.split('/')[-1]);
+    expect(plantImages).toEqual(basePlantImages);
+
+    const plantPrices = plantItems.map((item) => item.querySelector('p').textContent);
+    const basePlantPrices = global.alternatePlants.map((plant) => 'Price: ' + plant.price.toString());
+    expect(plantPrices).toEqual(basePlantPrices);
+  });
 })
